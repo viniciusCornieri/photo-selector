@@ -1,0 +1,4 @@
+node_modules/
+photos
+tmp/*
+!tmp/*/.gitkeep
