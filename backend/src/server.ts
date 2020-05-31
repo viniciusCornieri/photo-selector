@@ -1,7 +1,8 @@
 import express from 'express';
+import path from 'path';
 
 import pathConfig from './config/pathConfig';
-import getFirstPhoto from './services/getFirstPhoto';
+import getNextPhoto from './services/getNextPhoto';
 import selectPhoto from './services/selectPhoto';
 import discardPhoto from './services/discardPhoto';
 import undoAction from './services/undoAction';
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use('/photos', express.static(pathConfig.photosDir));
 
 app.use(async (request, response, next) => {
-  const firstPhoto = await getFirstPhoto();
+  const firstPhoto = await getNextPhoto();
 
   if (firstPhoto == null) {
     return response.status(204).send();
@@ -24,36 +25,44 @@ app.use(async (request, response, next) => {
   return next();
 });
 
-app.get('/first', async (request, response) => {
+app.get('/next', async (request, response) => {
   const { firstPhoto } = request;
 
-  return response.json({ href: `http://localhost:3333/photos/${firstPhoto}` });
+  return response.sendFile(path.resolve(pathConfig.photosDir, firstPhoto));
 });
 
-app.post('/select', async (request, response) => {
+app.post('/select', async (request, _response, next) => {
   const { firstPhoto } = request;
 
   await selectPhoto(firstPhoto);
 
-  return response.json({
-    selected: `http://localhost:3333/photos/${firstPhoto}`,
-  });
+  return next();
 });
 
-app.post('/discard', async (request, response) => {
+app.post('/discard', async (request, _response, next) => {
   const { firstPhoto } = request;
 
   await discardPhoto(firstPhoto);
 
-  return response.json({
-    discarded: `http://localhost:3333/photos/${firstPhoto}`,
-  });
+  return next();
 });
 
-app.post('/undo', async (request, response) => {
+app.post('/undo', async (_request, response, next) => {
   const action = await undoAction();
+  if (action) {
+    return next();
+  }
+  return response.status(204).send();
+});
 
-  return response.json(action);
+app.use(async (_request, response) => {
+  const nextPhoto = await getNextPhoto();
+
+  if (nextPhoto == null) {
+    return response.status(204).send();
+  }
+
+  return response.sendFile(path.resolve(pathConfig.photosDir, nextPhoto));
 });
 
 app.listen(3333, () => {
