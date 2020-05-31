@@ -1,71 +1,58 @@
 import express from 'express';
-import path from 'path';
+import HttpServer from 'http';
+import createSocket from 'socket.io';
 
-import pathConfig from './config/pathConfig';
+import router from './routes';
 import getNextPhoto from './services/getNextPhoto';
+import pathConfig from './config/pathConfig';
+import getStatus from './services/getStatus';
 import selectPhoto from './services/selectPhoto';
+import notifyAllUpdateImage from './services/socket/notifyAllUpdateImage';
 import discardPhoto from './services/discardPhoto';
 import undoAction from './services/undoAction';
 
 const app = express();
-
+const http = HttpServer.createServer(app);
+const io = createSocket(http);
 app.use(express.json());
 
-app.use('/photos', express.static(pathConfig.photosDir));
+app.use(router);
 
-app.use(async (request, response, next) => {
-  const firstPhoto = await getNextPhoto();
-
-  if (firstPhoto == null) {
-    return response.status(204).send();
-  }
-
-  request.firstPhoto = firstPhoto;
-
-  return next();
-});
-
-app.get('/next', async (request, response) => {
-  const { firstPhoto } = request;
-
-  return response.sendFile(path.resolve(pathConfig.photosDir, firstPhoto));
-});
-
-app.post('/select', async (request, _response, next) => {
-  const { firstPhoto } = request;
-
-  await selectPhoto(firstPhoto);
-
-  return next();
-});
-
-app.post('/discard', async (request, _response, next) => {
-  const { firstPhoto } = request;
-
-  await discardPhoto(firstPhoto);
-
-  return next();
-});
-
-app.post('/undo', async (_request, response, next) => {
-  const action = await undoAction();
-  if (action) {
-    return next();
-  }
-  return response.status(204).send();
-});
-
-app.use(async (_request, response) => {
+io.on('connection', async socket => {
+  console.log('connected');
   const nextPhoto = await getNextPhoto();
-
-  if (nextPhoto == null) {
-    return response.status(204).send();
+  if (nextPhoto) {
+    socket.emit('update-image', `${pathConfig.baseUrl}/photos/${nextPhoto}`);
+  } else {
+    socket.emit('no-image');
   }
 
-  return response.sendFile(path.resolve(pathConfig.photosDir, nextPhoto));
+  const status = await getStatus();
+  socket.emit('update-status', status);
+
+  socket.on('select', async () => {
+    console.log('select');
+    await selectPhoto();
+
+    notifyAllUpdateImage(io);
+  });
+
+  socket.on('discard', async () => {
+    console.log('discard');
+    await discardPhoto();
+
+    notifyAllUpdateImage(io);
+  });
+
+  socket.on('undo', async () => {
+    console.log('undo');
+    await undoAction();
+
+    notifyAllUpdateImage(io);
+  });
 });
 
-app.listen(3333, () => {
+http.listen(pathConfig.port, () => {
   // eslint-disable-next-line no-console
   console.log('🚀 Server started!');
 });

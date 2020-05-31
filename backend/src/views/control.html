@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Remote control</title>
+    <style>
+      html, body {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+
+      h1 {
+        font: 13px Helvetica, Arial;
+        color: #0e0e0e;
+      }
+
+      div {
+        display: flex;
+      }
+
+      .container {
+        background-color: #cccccc;
+        flex-direction: column;
+        flex: 1;
+        border: 2px;
+        margin: 0;
+        padding: 10px;
+        max-width: 500px;
+        max-height: 300px;
+        -webkit-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
+        -moz-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
+        box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
+      }
+
+      .subTotal{
+        display: block;
+        font-size: 30px;
+        margin: 10px;
+      }
+
+      .buttonsContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+      }
+
+      button {
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 50%;
+        text-align: center;
+        width: 100px;
+        height: 80px;
+        -webkit-box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
+        -moz-box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
+        box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
+
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='subTotal'>
+        <div class='missingFilesContainer'>Restante: <span id='missingFiles'></span></div>
+        <div class='selectedFilesContainer'>Selecionado: <span id='selectedFiles'></span></div>
+        <div class='discardedFilesContainer'>Descartado: <span id='discardedFiles'></span></div>
+      </div>
+      <div class='buttonsContainer'>
+        <button style='background-color: #0199ff;' onclick="onUndo()">Desfazer</button>
+        <button style='background-color: #ff0022;' onclick="onDiscard()">Descartar</button>
+        <button style="background-color: #33ff00;" onclick="onSelect()">Selecionar</button>
+      </div>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+
+    var socket = io();
+
+    var imageChunks = [];
+
+    socket.on('update-status', function (data) {
+      console.log('update-status')
+      var missingFiles = document.getElementById('missingFiles');
+      missingFiles.innerText = " " + data.missingFiles;
+
+      var selectedFiles = document.getElementById('selectedFiles');
+      selectedFiles.innerText = " " + data.selectedFiles;
+
+      var discardedFiles = document.getElementById('discardedFiles');
+      discardedFiles.innerText = " " + data.discardedFiles;
+    });
+
+    function onSelect(){
+      console.log('select');
+      socket.emit('select', {});
+    }
+
+    function onDiscard(){
+      console.log('discard')
+      socket.emit('discard', {});
+    }
+
+    function onUndo(){
+      console.log('undo');
+      socket.emit('undo', {});
+    }
+  </script>
+</html>
