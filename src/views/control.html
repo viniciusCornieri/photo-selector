@@ -5,11 +5,17 @@
     <title>Remote control</title>
     <style>
       html, body {
+        background-color: #282a36;
         display: flex;
         flex: 1;
         justify-content: center;
         align-items: center;
         height: 100%;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+        -o-user-select:none;
       }
 
       h1 {
@@ -22,7 +28,7 @@
       }
 
       .container {
-        background-color: #cccccc;
+        background-color: #7159c1;
         flex-direction: column;
         flex: 1;
         border: 2px;
@@ -30,6 +36,7 @@
         padding: 10px;
         max-width: 500px;
         max-height: 300px;
+        border-radius: 10px;
         -webkit-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
         -moz-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
         box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
@@ -39,6 +46,7 @@
         display: block;
         font-size: 30px;
         margin: 10px;
+        color: #fff;
       }
 
       .buttonsContainer {
@@ -47,32 +55,73 @@
         justify-content: space-evenly;
       }
 
-      button {
+      .statusLineContainer {
+        margin: 5px;
+      }
+      .label {
+        min-width: 160px;
+      }
+
+      .buttonsContainer > button {
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
+        border: 0;
         border-radius: 50%;
         text-align: center;
         width: 100px;
         height: 80px;
-        -webkit-box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
-        -moz-box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
-        box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.75);
-
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.65);
+        -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.65);
+        box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.65);
       }
+
+      .buttonsContainer > button:active {
+        -webkit-box-shadow: 3px 3px 3px 0px rgba(94, 94, 94, 0.65);
+        -moz-box-shadow: 3px 3px 3px 0px rgba(94, 94, 94, 0.65);
+        box-shadow: 3px 3px 3px 0px rgba(94, 94, 94, 0.65);
+        transform: translateY(4px);
+      }
+
+      .blue-btn {
+        background-color: #69dffa;
+      }
+
+      .blue-btn:active {
+        background-color: #4394a7;
+      }
+
+      .red-btn {
+        background-color: #ff5555;
+      }
+
+      .red-btn:active {
+        background-color: #b93d3d;
+      }
+
+      .green-btn {
+        background-color: #50fa7b;
+      }
+
+      .green-btn:active {
+        background-color: #33a14f;
+      }
+
     </style>
   </head>
   <body>
     <div class='container'>
       <div class='subTotal'>
-        <div class='missingFilesContainer'>Restante: <span id='missingFiles'></span></div>
-        <div class='selectedFilesContainer'>Selecionado: <span id='selectedFiles'></span></div>
-        <div class='discardedFilesContainer'>Descartado: <span id='discardedFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Restante:</span><span id='missingFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Selecionado:</span><span id='selectedFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Descartado:</span><span id='discardedFiles'></span></div>
       </div>
       <div class='buttonsContainer'>
-        <button style='background-color: #0199ff;' onclick="onUndo()">Desfazer</button>
-        <button style='background-color: #ff0022;' onclick="onDiscard()">Descartar</button>
-        <button style="background-color: #33ff00;" onclick="onSelect()">Selecionar</button>
+        <button class='blue-btn' onclick="onUndo()">Desfazer</button>
+        <button class='red-btn' onclick="onDiscard()">Descartar</button>
+        <button class='green-btn' onclick="onSelect()">Selecionar</button>
       </div>
     </div>
   </body>
@@ -86,13 +135,13 @@
     socket.on('update-status', function (data) {
       console.log('update-status')
       var missingFiles = document.getElementById('missingFiles');
-      missingFiles.innerText = " " + data.missingFiles;
+      missingFiles.innerText = data.missingFiles;
 
       var selectedFiles = document.getElementById('selectedFiles');
-      selectedFiles.innerText = " " + data.selectedFiles;
+      selectedFiles.innerText =  data.selectedFiles;
 
       var discardedFiles = document.getElementById('discardedFiles');
-      discardedFiles.innerText = " " + data.discardedFiles;
+      discardedFiles.innerText = data.discardedFiles;
     });
 
     function onSelect(){

@@ -55,5 +55,5 @@ io.on('connection', async socket => {
 
 http.listen(pathConfig.port, () => {
   // eslint-disable-next-line no-console
-  console.log('🚀 Server started!');
+  console.log(`🚀 Server running at ${pathConfig.baseUrl}!`);
 });

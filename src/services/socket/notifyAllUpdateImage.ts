@@ -1,17 +1,16 @@
 import { Server } from 'socket.io';
 import pathConfig from '../../config/pathConfig';
-import getNextPhoto from '../getNextPhoto';
-import getStatus from '../getStatus';
+import photosRepository from '../../repositories/PhotosRepository';
 
 async function notifyAllUpdateImage(io: Server): Promise<void> {
-  const nextPhoto = await getNextPhoto();
+  const nextPhoto = photosRepository.getNextPhoto();
   if (nextPhoto) {
     io.emit('update-image', `${pathConfig.baseUrl}/photos/${nextPhoto}`);
   } else {
     io.emit('no-image');
   }
 
-  const status = await getStatus();
+  const status = photosRepository.getStatus();
   io.emit('update-status', status);
 }
 
