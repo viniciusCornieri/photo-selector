@@ -114,14 +114,14 @@
   <body>
     <div class='container'>
       <div class='subTotal'>
-        <div class='statusLineContainer'><span class='label'>Restante:</span><span id='missingFiles'></span></div>
-        <div class='statusLineContainer'><span class='label'>Selecionado:</span><span id='selectedFiles'></span></div>
-        <div class='statusLineContainer'><span class='label'>Descartado:</span><span id='discardedFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Missing:</span><span id='missingFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Selected:</span><span id='selectedFiles'></span></div>
+        <div class='statusLineContainer'><span class='label'>Discarded:</span><span id='discardedFiles'></span></div>
       </div>
       <div class='buttonsContainer'>
-        <button class='blue-btn' onclick="onUndo()">Desfazer</button>
-        <button class='red-btn' onclick="onDiscard()">Descartar</button>
-        <button class='green-btn' onclick="onSelect()">Selecionar</button>
+        <button class='blue-btn' onclick="onUndo()">Undo</button>
+        <button class='red-btn' onclick="onDiscard()">Discard</button>
+        <button class='green-btn' onclick="onSelect()">Select</button>
       </div>
     </div>
   </body>

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import express from 'express';
 import HttpServer from 'http';
 import createSocket from 'socket.io';
@@ -54,6 +55,5 @@ io.on('connection', async socket => {
 });
 
 http.listen(pathConfig.port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`🚀 Server running at ${pathConfig.baseUrl}!`);
+  console.log(`🚀 Server running at ${pathConfig.baseUrl}`);
 });
