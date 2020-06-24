@@ -6,16 +6,20 @@
     <style>
       html, body {
         background-color: #282a36;
-        display: flex;
-        flex: 1;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select:none;
         user-select:none;
         -o-user-select:none;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        align-items: center;
+        max-height: 100vh;
       }
 
       h1 {
@@ -30,12 +34,14 @@
       .container {
         background-color: #7159c1;
         flex-direction: column;
-        flex: 1;
+        height: 33vh;
+        width: 90vw;
         border: 2px;
-        margin: 0;
+        margin: 10px 0;
         padding: 10px;
+        min-height:214px;
         max-width: 500px;
-        max-height: 300px;
+        max-height: 240px;
         border-radius: 10px;
         -webkit-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
         -moz-box-shadow: 11px 7px 15px -2px rgba(0,0,0,0.62);
@@ -109,9 +115,26 @@
         background-color: #33a14f;
       }
 
+      .after, .before {
+        display: flex;
+        justify-content: center;
+      }
+
+
+      img {
+        width: auto;
+        height: 33vh;
+        max-height: 100%;
+        max-width: 100%;
+      }
+
     </style>
   </head>
   <body>
+    <div class='content'>
+    <div class='before'>
+      <img src="" alt="before" id="before">
+    </div>
     <div class='container'>
       <div class='subTotal'>
         <div class='statusLineContainer'><span class='label'>Missing:</span><span id='missingFiles'></span></div>
@@ -124,6 +147,10 @@
         <button class='green-btn' onclick="onSelect()">Select</button>
       </div>
     </div>
+    <div class='after'>
+      <img src="" alt="after" id="after">
+    </div>
+  </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
@@ -142,6 +169,16 @@
 
       var discardedFiles = document.getElementById('discardedFiles');
       discardedFiles.innerText = data.discardedFiles;
+
+      var imgAfter = document.getElementById('after');
+      imgAfter.setAttribute('style', 'display:block;');
+
+      imgAfter.setAttribute('src', data.after);
+
+      var img = document.getElementById('before');
+      img.setAttribute('style', 'display:block;');
+
+      img.setAttribute('src', data.before);
     });
 
     function onSelect(){

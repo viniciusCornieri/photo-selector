@@ -10,6 +10,13 @@ class ActionsRepository {
   pop(): Action | null {
     return actions.pop() || null;
   }
+
+  peek(): Action | null {
+    if (actions.length) {
+      return actions[actions.length - 1];
+    }
+    return null;
+  }
 }
 
 export default new ActionsRepository();

@@ -6,6 +6,8 @@ import pathConfig from './config/pathConfig';
 const router = Router();
 
 router.use('/photos', express.static(pathConfig.photosDir));
+router.use('/selected', express.static(pathConfig.selectedDir));
+router.use('/discarded', express.static(pathConfig.discardedDir));
 
 router.get('/', (_request, response) => {
   response.sendFile(path.resolve(__dirname, 'views', 'index.html'));

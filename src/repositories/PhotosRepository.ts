@@ -1,11 +1,14 @@
 import fs from 'fs';
 import pathConfig from '../config/pathConfig';
 import ActionsRepository from './ActionsRepository';
+import getBeforePhoto from '../services/photos/getBeforePhoto';
 
 interface Status {
   missingFiles: number;
   selectedFiles: number;
   discardedFiles: number;
+  after: string;
+  before: string;
 }
 
 let missingPhotos: string[] = [];
@@ -70,11 +73,20 @@ class PhotosRepository {
     }
   }
 
+  getAfter(): string | null {
+    if (missingPhotos.length >= 2) {
+      return missingPhotos[missingPhotos.length - 2];
+    }
+    return null;
+  }
+
   public getStatus(): Status {
     return {
       missingFiles: missingPhotos.length,
       selectedFiles: selectedPhotos.length,
       discardedFiles: discardedPhotos.length,
+      after: `${pathConfig.baseUrl}/photos/${this.getAfter()}`,
+      before: getBeforePhoto(),
     };
   }
 }
